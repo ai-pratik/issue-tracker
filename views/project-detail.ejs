@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= project.name %> - Project Detail</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-3xl">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">
+          <%= project.name %> - Project Detail
+        </h1>
+        <div class="flex space-x-2">
+          <a
+            href="/create-issue/<%= project._id %>"
+            class="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-700 transition duration-300 font-medium"
+            >Create New Issue</a
+          >
+          <a
+            href="/"
+            class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition duration-300 font-medium"
+            >Back to Projects</a
+          >
+        </div>
+      </div>
+      <div class="mb-4">
+        <p class="text-lg mb-2">Description: <%= project.description %></p>
+        <p class="text-lg mb-2">Author: <%= project.author %></p>
+      </div>
+
+      <div class="flex mb-4">
+        <div class="w-full mr-4">
+          <input
+            type="text"
+            id="search"
+            placeholder="Search by title/description"
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
+        <div class="flex flex-wrap">
+          <% labels.forEach(label => { %>
+          <label for="label-<%= label %>" class="mr-2 mb-2">
+            <input
+              type="checkbox"
+              id="label-<%= label %>"
+              name="labels[]"
+              value="<%= label %>"
+            />
+            <%= label %>
+          </label>
+          <% }); %>
+        </div>
+        <div class="w-full mt-2">
+          <input
+            type="text"
+            id="author"
+            placeholder="Filter by author"
+            class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-green-500 focus:border-green-500"
+          />
+        </div>
+        <button
+          type="button"
+          id="filter-button"
+          class="px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-700 transition duration-300 font-medium ml-auto"
+        >
+          Filter
+        </button>
+      </div>
+
+      <h2 class="text-2xl font-bold mb-4">Issues</h2>
+      <ul id="issues-list" class="list-none space-y-4">
+        <% issues.forEach(issue => { %>
+        <li
+          class="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-200 transition duration-300"
+          data-title="<%= issue.title.toLowerCase() %>"
+          data-description="<%= issue.description.toLowerCase() %>"
+          data-labels="<%= issue.labels.join(',').toLowerCase() %>"
+          data-author="<%= issue.author.toLowerCase() %>"
+        >
+          <a href="/project/<%= project._id %>/issue/<%= issue._id %>">
+            <h3 class="text-lg font-bold text-gray-800"><%= issue.title %></h3>
+          </a>
+          <p class="text-gray-600"><%= issue.description.substring(0, 100) %>...</p>
+          <div class="flex items-center mt-2 space-x-2">
+            <span
+              class="px-2 py-1 rounded-full bg-gray-200 text-xs text-gray-600"
+              ><%= issue.labels.join(', ') %></span
+            >
+          </div>
+        </li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('search');
+        const authorInput = document.getElementById('author');
+        const filterButton = document.getElementById('filter-button');
+        const issuesList = document.getElementById('issues-list');
+        const issueItems = document.querySelectorAll('#issues-list li');
+
+        function filterIssues() {
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          const selectedLabels = Array.from(
+            document.querySelectorAll('input[name="labels[]"]:checked')
+          ).map((checkbox) => checkbox.value.toLowerCase());
+          const author = authorInput.value.toLowerCase().trim();
+
+          issueItems.forEach((item) => {
+            const title = item.dataset.title;
+            const description = item.dataset.description;
+            const labels = item.dataset.labels.split(',');
+            const issueAuthor = item.dataset.author;
+
+            const hasSearchTerm =
+              searchTerm === '' ||
+              title.includes(searchTerm) ||
+              description.includes(searchTerm);
+
+            const hasSelectedLabels =
+              selectedLabels.length === 0 ||
+              selectedLabels.every((label) => labels.includes(label));
+
+            const hasAuthor = author === '' || issueAuthor === author;
+
+            item.style.display = hasSearchTerm && hasSelectedLabels && hasAuthor ? 'block' : 'none';
+          });
+        }
+
+        searchInput.addEventListener('input', filterIssues);
+        authorInput.addEventListener('input', filterIssues);
+
+        const labelCheckboxes = document.querySelectorAll('input[name="labels[]"]');
+        labelCheckboxes.forEach((checkbox) => {
+          checkbox.addEventListener('change', filterIssues);
+        });
+
+        filterButton.addEventListener('click', filterIssues);
+      });
+    </script>
+  </body>
+</html>

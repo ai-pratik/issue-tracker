@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue Tracker - Projects</title>
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <header class="flex justify-between items-center py-4 px-4 bg-white shadow-md">
+    <h1 class="text-xl font-bold text-gray-800">Issue Tracker</h1>
+    <a href="/create-project" class="inline-flex items-center px-4 py-2 rounded-full bg-green-500 text-white hover:bg-green-700 transition duration-300 font-medium">
+      Create New Project
+    </a>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Projects</h2>
+    <ul class="list-none space-y-4">
+      <% projects.forEach(project => { %>
+        <li class="project-card flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+          <a href="/project/<%= project._id %>" class="flex items-center w-full">
+            <div class="mr-4 flex-shrink-0">
+              <svg class="h-8 w-8 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 002 0v-6z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="text-lg font-medium text-gray-800 line-clamp-2 overflow-hidden w-full">
+              <%= project.name %>
+            </div>
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+</body>
+
+</html>
